@@ -31,10 +31,13 @@ PLUGIN_DB = {}
 TASK_DATE_DIC = {}
 WHITE_LIST = []
 
-class vulscan():
+
+class VulScan(object):
     def __init__(self, task_id, task_netloc, task_plugin):
+        # 任务ID
         self.task_id = task_id
         self.task_netloc = task_netloc
+        # 插件
         self.task_plugin = task_plugin
         self.result_info = ''
         self.start()
@@ -271,7 +274,7 @@ if __name__ == '__main__':
             while True:
                 if int(thread._count()) < THREAD_COUNT:
                     if task_netloc[0] in WHITE_LIST: break
-                    thread.start_new_thread(vulscan, (task_id, task_netloc, task_plugin))
+                    thread.start_new_thread(VulScan, (task_id, task_netloc, task_plugin))
                     break
                 else:
                     time.sleep(2)

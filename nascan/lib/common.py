@@ -6,6 +6,7 @@ import datetime
 import time
 import base64
 
+
 def format_config(config_name, config_info):
     mark_list = []
     try:
@@ -32,6 +33,7 @@ def get_config():
         else:
             config[name] = config_info['config'][name]['value']
     return config
+
 
 def monitor(CONFIG_INI, STATISTICS, NACHANGE):
     while True:

@@ -16,11 +16,21 @@ except AttributeError:
     pass
 else:
     ssl._create_default_https_context = _create_unverified_https_context
-class scan:
+
+
+class Scan(object):
+    """
+    任务扫描类
+    """
     def __init__(self, task_host, port_list):
+        """
+        :param task_host: 扫描主机
+        :param port_list: 端口列表
+        """
         self.ip = task_host
         self.port_list = port_list
         self.config_ini = {}
+        self.timeout = ''
 
     def run(self):
         self.timeout = int(self.config_ini['Timeout'])
@@ -29,7 +39,8 @@ class scan:
             self.banner = ''
             self.port = int(_port)
             self.scan_port()  # 端口扫描
-            if not self.banner:continue
+            if not self.banner:
+                continue
             self.server_discern()  # 服务识别
             if self.server == '':
                 web_info = self.try_web()  # 尝试web访问
@@ -39,7 +50,12 @@ class scan:
                     mongo.NA_INFO.update({'ip': self.ip, 'port': self.port},
                                          {"$set": {'banner': self.banner, 'server': 'web', 'webinfo': web_info,
                                                    'time': time_}})
+
     def scan_port(self):
+        """
+        端口扫描
+        :return:
+        """
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -61,7 +77,8 @@ class scan:
         date_ = time_.strftime('%Y-%m-%d')
         try:
             banner = unicode(self.banner, errors='replace')
-            if self.banner == 'NULL': banner = ''
+            if self.banner == 'NULL':
+                banner = ''
             mongo.NA_INFO.insert({"ip": self.ip, "port": self.port, "hostname": hostname, "banner": banner, "time": time_})
             self.statistics[date_]['add'] += 1
         except:
@@ -76,8 +93,13 @@ class scan:
                     history_info['del_time'] = time_
                     history_info['type'] = 'update'
                     mongo.NA_HISTORY.insert(history_info)
+
     def server_discern(self):
-        for mark_info in self.config_ini['Discern_server']: # 快速识别
+        """
+        服务识别
+        :return:
+        """
+        for mark_info in self.config_ini['Discern_server']:  # 快速识别
             try:
                 name, default_port, mode, reg = mark_info
                 if mode == 'default':
@@ -162,7 +184,12 @@ class scan:
         except:
             return
 
-    def ip2hostname(self,ip):
+    def ip2hostname(self, ip):
+        """
+        将IP转成主机名
+        :param ip:
+        :return:
+        """
         try:
             hostname = socket.gethostbyaddr(ip)[0]
             return hostname
